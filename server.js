@@ -1,30 +1,24 @@
-// backend/server.js
-require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const path = require("path");
+require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect DB
-const MONGO = process.env.MONGODB_URI || "mongodb://localhost:27017/bloomdb";
-mongoose
-  .connect(MONGO)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("MongoDB error", err));
+const bloomRoutes = require("./routes/blooms");
+const predictRoutes = require("./routes/predict");
 
-// Routes
-const bloomsRouter = require("./routes/blooms");
-const predictRouter = require("./routes/predict");
-
-app.use("/api/blooms", bloomsRouter);
-app.use("/api/predict", predictRouter);
-
-// quick health
-app.get("/api/health", (req, res) => res.json({ ok: true }));
+app.use("/api/blooms", bloomRoutes);
+app.use("/api/predict", predictRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Backend listening on port ${PORT}`));
+
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("✅ MongoDB connected");
+    app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+  })
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
