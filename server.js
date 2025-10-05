@@ -6,19 +6,8 @@ const cors = require("cors");
 const path = require("path");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
-
-// Allow Vercel frontend
-app.use(
-  cors({
-    origin: [
-      "https://bloom-watchers-frontend.vercel.app/",
-      "http://localhost:3000", // For local development
-      "http://localhost:5173", // For Vite local dev
-    ],
-    credentials: true,
-  })
-);
 
 // Connect DB
 const MONGO = process.env.MONGODB_URI || "mongodb://localhost:27017/bloomdb";
